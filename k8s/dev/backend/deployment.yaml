@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-backend
+  namespace: chat-dev
+  labels:
+    app: chat-backend
+    environment: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-backend
+  template:
+    metadata:
+      labels:
+        app: chat-backend
+        environment: dev
+    spec:
+      containers:
+        - name: chat-backend
+          image: mrkolincechatgpt/chat-backend:dev-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: PORT
+              value: "5000"
+            - name: CLIENT_URL
+              value: "http://0.0.0.0"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5

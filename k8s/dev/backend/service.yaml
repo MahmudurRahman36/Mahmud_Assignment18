@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-backend-svc
+  namespace: chat-dev
+  labels:
+    app: chat-backend
+    environment: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: chat-backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP

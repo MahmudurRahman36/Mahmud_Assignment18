@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chat-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/MahmudurRahman36/Mahmud_Assignment18.git
+    targetRevision: prod
+    path: k8s/prod
+    directory:
+      recurse: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: chat-prod
+
+  # Automated sync — ArgoCD auto-applies when prod branch manifests change.
+  # This means once a PR is merged to prod and the pipeline updates the image tag,
+  # ArgoCD reconciles the cluster within ~3 minutes with no further human action.
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

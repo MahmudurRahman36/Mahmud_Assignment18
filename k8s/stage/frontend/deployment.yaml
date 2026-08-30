@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-frontend
+  namespace: chat-stage
+  labels:
+    app: chat-frontend
+    environment: stage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: chat-frontend
+  template:
+    metadata:
+      labels:
+        app: chat-frontend
+        environment: stage
+    spec:
+      containers:
+        - name: chat-frontend
+          image: mrkolincechatgpt/chat-frontend:stage-latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
