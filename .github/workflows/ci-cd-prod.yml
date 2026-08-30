@@ -6,6 +6,9 @@ on:
   push:
     branches: [ prod ]
 
+permissions:
+  contents: write
+
 env:
   BACKEND_IMAGE: mrkolincechatgpt/chat-backend
   FRONTEND_IMAGE: mrkolincechatgpt/chat-frontend
@@ -100,9 +103,9 @@ jobs:
 
       - name: Deploy to prod namespace via kubectl
         env:
-          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_PROD }}
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_CONTENT }}
         run: |
-          echo "$KUBECONFIG_DATA" | base64 -d > /tmp/kubeconfig
+          printf "%s" "$KUBECONFIG_DATA" > /tmp/kubeconfig
           export KUBECONFIG=/tmp/kubeconfig
           kubectl apply -f k8s/prod/
           kubectl rollout status deployment/chat-backend -n chat-prod --timeout=180s

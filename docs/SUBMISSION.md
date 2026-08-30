@@ -97,19 +97,31 @@ All images built with `{env}-{git-short-sha}` tagging scheme:
 
 ---
 
-## GitHub Secrets Required (for CI/CD to run)
+## GitHub Secrets (configured)
 
-These secrets must be added at:  
-`GitHub → Mahmud_Assignment18 → Settings → Secrets and variables → Actions`
+Added under `Settings → Secrets and variables → Actions`:
 
-| Secret | Value |
-|--------|-------|
-| `DOCKERHUB_USERNAME` | mrkolincechatgpt |
-| `DOCKERHUB_TOKEN` | (DockerHub access token) |
-| `KUBECONFIG_CONTENT` | (contents of `kubeconfig-k8s.yaml` — saved locally) |
+| Secret | Purpose |
+|--------|---------|
+| `DOCKERHUB_USERNAME` | DockerHub login for image push |
+| `DOCKERHUB_TOKEN` | DockerHub access token |
+| `KUBECONFIG_CONTENT` | Kubeconfig for kubectl deploy from Actions |
 
-The kubeconfig for the GitHub secret is saved at:  
-`E:\4. Training\DevOps\Ostad\Assignment18\kubeconfig-k8s.yaml`
+Note: the k3s API server needed `tls-san: 13.60.243.176` in `/etc/rancher/k3s/config.yaml` so the cert covers the public IP — without it, remote kubectl fails TLS verification.
+
+## Pipeline Verification
+
+The prod pipeline ran green end to end (run #7): CI build/typecheck/lint → Docker build & push (`prod-d93c34f`) → bot commit pinning the tag in `k8s/prod/*/deployment.yaml` → kubectl rollout to `chat-prod`. All 6 prod pods came up on the pinned tag, and ArgoCD stayed in sync since the manifest change went through git.
+
+Dev and stage CI runs are green on push; their deploy jobs remain manual via workflow_dispatch, matching the branching policy.
+
+## Evidence
+
+Screenshots in `docs/screenshots/`:
+1. `01-prod-app-online.png` — chat app live at prod URL, Socket.IO connected
+2. `02-argocd-all-apps.png` — ArgoCD: 3 apps Healthy; prod Synced (auto), dev/stage manual
+3. `03-kubectl-pods-terminal.png` — kubectl get pods across namespaces from PowerShell/SSH
+4. `04-github-actions-runs.png` — Actions history incl. green prod auto-deploy run
 
 ---
 
