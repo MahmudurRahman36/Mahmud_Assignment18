@@ -100,9 +100,9 @@ jobs:
 
       - name: Deploy to stage namespace via kubectl
         env:
-          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_STAGE }}
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_CONTENT }}
         run: |
-          echo "$KUBECONFIG_DATA" | base64 -d > /tmp/kubeconfig
+          printf "%s" "$KUBECONFIG_DATA" > /tmp/kubeconfig
           export KUBECONFIG=/tmp/kubeconfig
           kubectl apply -f k8s/stage/
           kubectl rollout status deployment/chat-backend -n chat-stage --timeout=120s
