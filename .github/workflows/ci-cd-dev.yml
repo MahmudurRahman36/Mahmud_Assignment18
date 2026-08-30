@@ -100,9 +100,9 @@ jobs:
 
       - name: Deploy to dev namespace via kubectl
         env:
-          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_DEV }}
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_CONTENT }}
         run: |
-          echo "$KUBECONFIG_DATA" | base64 -d > /tmp/kubeconfig
+          printf "%s" "$KUBECONFIG_DATA" > /tmp/kubeconfig
           export KUBECONFIG=/tmp/kubeconfig
           kubectl apply -f k8s/dev/
           kubectl rollout status deployment/chat-backend -n chat-dev --timeout=120s
