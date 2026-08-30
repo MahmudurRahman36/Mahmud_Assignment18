@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: chat-frontend
-          image: mrkolincechatgpt/chat-frontend:prod-d93c34f
+          image: mrkolincechatgpt/chat-frontend:prod-cb23958
           imagePullPolicy: Always
           ports:
             - containerPort: 80
